@@ -1,0 +1,22 @@
+List of APIs:-
+
+1. Sign Up
+POST /api/student/auth/signup
+
+2. Login
+POST /api/student/auth/login
+
+3. Get Information (Student)
+GET /api/student/auth/me (Requies Token for Authentication)
+
+4. Edit Profile 
+PATCH /api/student/auth/profile (Requies Token for Authentication)
+
+5. Get Details (Admin)
+GET /api/v1/students (Requies Token for Authentication)
+
+6. Get Single Student detail by ID (Admin)
+GET /api/v1/students/:id (Requies Token for Authentication)
+
+7. Delete Student (Admin)
+DELETE /api/v1/students/:id (Requies Token for Authentication)
