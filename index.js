@@ -1,28 +1,40 @@
 import express from "express";
-import dotenv from "dotenv";
+import mongoose from "mongoose";
 import cors from "cors";
-import connectDB from "./config/connectDB.js";
-import router from "./routes/authRoutes.js";
-import studentRoutes from "./routes/studentRoutes.js";
+import dotenv from "dotenv";
 
-dotenv.config(); //{ path: "./.env" });
+// Import consolidated routes
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
-const PORT = process.env.PORT;
-//console.log(PORT);
+dotenv.config();
+
 const app = express();
-app.use(express.json());
-// connect to database
-connectDB();
-app.use(
-  cors({
-    origin: "http://localhost:5173", // frontend URL(Vite React) for CORS (data protection); use "*" to allow all origins
-    credentials: true, // Enable cookies and other credentials in CORS requests
-  }),
-);
-app.use("/api/student/auth", router); // use the auth routes with the "/api/auth" prefix
-app.use("/api/v1/students", studentRoutes);
 
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "Server is running" }); // "/" represents the home route
+// Connect to MongoDB
+try {
+  await mongoose.connect(process.env.MONGO_URI);
+  console.log("MongoDB connected");
+} catch (error) {
+  console.error("MongoDB connection failed:", error);
+}
+app.use(cors());
+app.use(express.json());
+
+// Mount the active routes
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: "Internal Server Error",
+  });
 });
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
